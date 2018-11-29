@@ -2,7 +2,6 @@ package com.wjc.imageloaderdemo;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.LruCache;
 import android.widget.ImageView;
 
 import java.net.HttpURLConnection;
@@ -17,24 +16,8 @@ import java.util.concurrent.Executors;
  */
 
 public class ImageLoader {
-    LruCache<String, Bitmap> mImageCache;
+    ImageCache mImageCache = new ImageCache();
     ExecutorService mES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-    public ImageLoader() {
-        initImageCache();
-    }
-
-    private void initImageCache() {
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 4;
-        mImageCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
-            }
-        };
-    }
-
 
     public void disPlayImage(final String imageUrl, final ImageView imageView) {
         imageView.setTag(imageUrl);
