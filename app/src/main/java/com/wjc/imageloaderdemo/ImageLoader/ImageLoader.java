@@ -1,4 +1,4 @@
-package com.wjc.imageloaderdemo;
+package com.wjc.imageloaderdemo.ImageLoader;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +16,25 @@ import java.util.concurrent.Executors;
  */
 
 public class ImageLoader {
-    ImageCache mImageCache = new ImageCache();
+    ImageCache mImageCache = new MemoryCache();
     ExecutorService mES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
+    public void setImageCache(ImageCache imageCache) {
+        this.mImageCache = imageCache;
+    }
+
     public void disPlayImage(final String imageUrl, final ImageView imageView) {
+        Bitmap bitmap = mImageCache.get(imageUrl);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+            return;
+        }
+        //没有缓存，去下载
+        submitLoadRequest(imageUrl, imageView);
+
+    }
+
+    private void submitLoadRequest(final String imageUrl, final ImageView imageView) {
         imageView.setTag(imageUrl);
         mES.submit(new Runnable() {
             @Override
@@ -34,7 +49,6 @@ public class ImageLoader {
                 }
             }
         });
-
     }
 
 
