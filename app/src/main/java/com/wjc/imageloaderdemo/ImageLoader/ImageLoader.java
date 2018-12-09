@@ -18,7 +18,8 @@ import java.util.concurrent.Executors;
 public class ImageLoader {
     private static ImageLoader sInstance;
     private ImageCache mImageCache = new MemoryCache();
-    ExecutorService mES;
+    private ExecutorService mES;
+    private ImageLoaderConfig config;
 
     private ImageLoader() {
     }
@@ -28,7 +29,7 @@ public class ImageLoader {
      *
      * @return ImageLoader
      */
-    public static ImageLoader Instance() {
+    public static ImageLoader getInstance() {
         if (sInstance == null) {
             synchronized (ImageLoader.class) {
                 if (sInstance == null) {
@@ -40,13 +41,11 @@ public class ImageLoader {
     }
 
     public void init(ImageLoaderConfig config) {
+        this.config = config;
         mImageCache = config.bitmapCache;
         mES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
-    public void setImageCache(ImageCache imageCache) {
-        this.mImageCache = imageCache;
-    }
 
     public void disPlayImage(final String imageUrl, final ImageView imageView) {
         Bitmap bitmap = mImageCache.get(imageUrl);
