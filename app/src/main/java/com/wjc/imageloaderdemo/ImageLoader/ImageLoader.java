@@ -16,8 +16,33 @@ import java.util.concurrent.Executors;
  */
 
 public class ImageLoader {
-    ImageCache mImageCache = new MemoryCache();
-    ExecutorService mES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static ImageLoader sInstance;
+    private ImageCache mImageCache = new MemoryCache();
+    ExecutorService mES;
+
+    private ImageLoader() {
+    }
+
+    /**
+     * DCL 形式
+     *
+     * @return ImageLoader
+     */
+    public static ImageLoader Instance() {
+        if (sInstance == null) {
+            synchronized (ImageLoader.class) {
+                if (sInstance == null) {
+                    sInstance = new ImageLoader();
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    public void init(ImageLoaderConfig config) {
+        mImageCache = config.bitmapCache;
+        mES = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    }
 
     public void setImageCache(ImageCache imageCache) {
         this.mImageCache = imageCache;
